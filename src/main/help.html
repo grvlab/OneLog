@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneLog - Help</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.6;
+      padding: 32px 40px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 22px; font-weight: 700; color: #0F2623; margin-bottom: 4px; }
+    .version { font-size: 12px; color: #94a3b8; margin-bottom: 28px; }
+    h2 {
+      font-size: 15px; font-weight: 600; color: #0D9488;
+      margin-top: 28px; margin-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;
+    }
+    p, li { font-size: 13px; color: #475569; }
+    ul { padding-left: 20px; margin-bottom: 12px; }
+    li { margin-bottom: 6px; }
+    kbd {
+      display: inline-block; padding: 1px 6px; font-size: 11px;
+      font-family: 'Segoe UI', monospace;
+      background: #e2e8f0; border: 1px solid #cbd5e1;
+      border-radius: 4px; color: #334155;
+    }
+    .shortcut-table { width: 100%; border-collapse: collapse; margin: 8px 0 16px; }
+    .shortcut-table td { padding: 6px 10px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+    .shortcut-table td:first-child { width: 180px; color: #64748b; }
+
+    /* Collapsible sections */
+    details {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    details[open] {
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    details summary {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0F2623;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::before {
+      content: '▸';
+      font-size: 11px;
+      color: #94a3b8;
+      transition: transform 0.2s;
+      display: inline-block;
+      width: 12px;
+    }
+    details[open] summary::before { transform: rotate(90deg); }
+    details summary:hover { background: #f8fafc; }
+    .detail-body {
+      padding: 0 16px 14px 36px;
+      font-size: 12.5px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+    .detail-body p { margin-bottom: 8px; }
+    .detail-body ul { margin: 6px 0 10px; padding-left: 16px; }
+    .detail-body li { margin-bottom: 4px; font-size: 12.5px; color: #64748b; }
+    .detail-body strong { color: #334155; }
+    .detail-body code {
+      font-size: 11.5px; background: #f1f5f9;
+      padding: 1px 5px; border-radius: 3px; color: #334155;
+    }
+    .tip {
+      background: #f0fdfa; border-left: 3px solid #0D9488;
+      padding: 8px 12px; border-radius: 0 6px 6px 0;
+      margin: 8px 0; font-size: 12px; color: #115e59;
+    }
+    .new-badge {
+      display: inline-block; font-size: 9px; font-weight: 700;
+      background: #22c55e; color: white; padding: 1px 5px;
+      border-radius: 3px; vertical-align: middle; margin-left: 6px;
+      letter-spacing: 0.5px;
+    }
+    .section-intro {
+      font-size: 13px; color: #64748b; margin-bottom: 12px;
+    }
+    .footer {
+      margin-top: 36px; padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+      text-align: center; font-size: 11px; color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>OneLog</h1>
+  <div class="version">Version 1.0.0</div>
+
+  <h2>Getting Started</h2>
+  <p>OneLog helps working professionals log daily activities, track tasks with time, manage projects, and plan ahead, all in a lightweight, offline desktop app. Your data never leaves your machine. Press <kbd>Alt</kbd>+<kbd>K</kbd> to open the Command Palette anytime for quick access to any feature.</p>
+
+  <!-- ===== FEATURES ===== -->
+  <h2>Features</h2>
+  <p class="section-intro">Click any section below to expand details.</p>
+
+  <details>
+    <summary>📝 Daily Log</summary>
+    <div class="detail-body">
+      <p>Write a free-form summary of your workday: meetings, decisions, accomplishments, blockers, or anything you want to remember.</p>
+      <ul>
+        <li>Uses a <strong>rich text editor</strong> with full formatting: bold, italic, underline, strikethrough, headings (H2/H3), bullet &amp; numbered lists, blockquotes, code blocks, and horizontal rules.</li>
+        <li><strong>Insert images</strong> using the 🖼 toolbar button. Images are saved as local attachments and can be resized by dragging.</li>
+        <li><strong>Backlinks:</strong> Type <code>[[2026-01-15]]</code> to create a clickable cross-reference to another date's entry.</li>
+        <li><strong>Auto-saves</strong> after 800ms of inactivity, so there's no need to hit Save manually.</li>
+        <li>Force save anytime with <kbd>Alt</kbd>+<kbd>S</kbd>.</li>
+        <li>Content is stored per date. Navigate away and come back, your log is preserved.</li>
+      </ul>
+      <div class="tip">💡 Tip: Use headings to structure your log (e.g., "Morning Stand-up", "Afternoon Deep Work") for easier scanning later.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>✅ Task Tracking</summary>
+    <div class="detail-body">
+      <p>Add tasks for the current day, track completion, and stay on top of your to-do list.</p>
+      <ul>
+        <li><strong>Add tasks</strong> using the input field at the bottom. Press <kbd>Enter</kbd> or click "+ Add".</li>
+        <li><strong>Check off</strong> tasks by clicking the checkbox. Completed tasks show a strikethrough.</li>
+        <li><strong>Edit text</strong> by double-clicking on any task name.</li>
+        <li><strong>Drag to reorder</strong> tasks by grabbing the ⠿ handle on the left.</li>
+        <li><strong>Delete</strong> a task with the ✕ button (appears on hover).</li>
+        <li><strong>Assign a project</strong> via the dropdown that appears on hover, or select one when adding a new task.</li>
+        <li>Task count summary (e.g., "3/5 done") is shown in the section header.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>⏱️ Smart Time Tracking</summary>
+    <div class="detail-body">
+      <p>Track how long you spend on each task with a <strong>smart timer</strong> that automatically manages task status and prevents runaway time.</p>
+      <ul>
+        <li><strong>Start a timer</strong> by clicking the ▶ button on any task. A live counter ticks in real time.</li>
+        <li><strong>Single-task focus:</strong> Starting a timer <strong>automatically stops</strong> any other running timer, so only one task runs at a time.</li>
+        <li><strong>Auto-status: In Progress</strong>. Starting a timer automatically moves the task to <strong>"In Progress"</strong> on the Kanban board. No need to drag the card manually.</li>
+        <li><strong>Stop</strong> the timer with the ⏹ button on the task or from the <strong>global timer indicator</strong> in the header bar.</li>
+        <li><strong>Auto-stop on completion:</strong> Checking a task as done (checkbox or dragging to "Done" on Kanban) <strong>automatically stops</strong> its running timer and saves the elapsed time.</li>
+        <li><strong>Manual entry:</strong> Click the ✏️ icon (on hover) to type time manually.</li>
+        <li><strong>Active indicator:</strong> A pulsing green dot and live counter appear next to the running task, plus a green badge in the header showing the task name and elapsed time.</li>
+        <li>Total tracked time across all tasks is shown at the top of the task section.</li>
+      </ul>
+
+      <p><strong>Overnight / stale timer protection:</strong></p>
+      <ul>
+        <li>Forgot to stop a timer before closing your laptop? No worries, the app <strong>automatically caps timers at 8 hours</strong>.</li>
+        <li>When the app starts, any timer that has been running longer than 8 hours is stopped and credited with the maximum 8 hours.</li>
+        <li>The same 8-hour cap applies when you manually stop a runaway timer or when a task is marked complete.</li>
+      </ul>
+      <div class="tip">💡 Tip: The timer persists in the database. You can close and reopen the app, and if the timer has been running for less than 8 hours it continues counting from where it left off.</div>
+
+      <p><strong>Manual time input formats:</strong></p>
+      <ul>
+        <li><code>2h 30m</code> (hours and minutes)</li>
+        <li><code>1h</code> (hours only)</li>
+        <li><code>45m</code> (minutes only)</li>
+        <li><code>1:30</code> (hours:minutes)</li>
+        <li><code>90</code> (plain number treated as minutes)</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>📁 Projects</summary>
+    <div class="detail-body">
+      <p>Organize tasks under color-coded projects for better categorization.</p>
+      <ul>
+        <li>Open <strong>"Manage Projects"</strong> in the sidebar to create, rename, recolor, or delete projects.</li>
+        <li>Each project gets a <strong>color badge</strong> that appears on assigned tasks.</li>
+        <li>Assign a project to a task via the dropdown selector on hover, or choose one when adding a new task.</li>
+        <li>Deleting a project removes the association from tasks but <strong>does not delete tasks</strong> themselves.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>🏷️ Tags &amp; Labels <span class="new-badge">NEW</span></summary>
+    <div class="detail-body">
+      <p>Categorize daily entries with color-coded tags for quick filtering and organization.</p>
+      <ul>
+        <li><strong>Manage tags</strong> from the "Tags" section in the sidebar to create, rename, recolor, or delete tags.</li>
+        <li><strong>Tag entries</strong> using the tag bar above the Daily Log. Click "+ Tag" to assign existing tags or create new ones.</li>
+        <li>Each tag has a <strong>custom color</strong> and displays as a small pill badge on the entry.</li>
+        <li>Tags can be used as <strong>search filters</strong> in the advanced search.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>🎯 Tomorrow's Plan &amp; Yesterday's Plan</summary>
+    <div class="detail-body">
+      <p>Write down priorities and intentions for the next day at the end of each workday.</p>
+      <ul>
+        <li>Uses the same <strong>rich text editor</strong> as the daily log with full formatting and image insertion.</li>
+        <li>Great for preparing <strong>morning stand-ups</strong> and ensuring nothing slips through the cracks.</li>
+      </ul>
+
+      <p><strong>Yesterday's Plan</strong> <span class="new-badge">NEW</span> connects planning to action:</p>
+      <ul>
+        <li>When you open any day, the <strong>previous working day's Tomorrow's Plan</strong> is shown in a collapsible amber section above the Daily Log.</li>
+        <li>Each plan item has a <strong>"+ Task"</strong> button (on hover) to instantly convert it into a task for today.</li>
+        <li><strong>"Convert all to tasks"</strong> to bulk-create tasks from every plan item in one click.</li>
+        <li>Converted items are shown as struck-through so you can track what was added.</li>
+        <li>Click the <strong>date link</strong> in the header to navigate back to the source day.</li>
+      </ul>
+      <div class="tip">💡 Tip: Write tomorrow's plan as a bullet list. Each bullet becomes a convertible item the next morning.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>🚧 Blockers <span class="new-badge">NEW</span></summary>
+    <div class="detail-body">
+      <p>Record impediments and things you're stuck on. Blockers you write here are automatically included in the <strong>Standup Generator</strong> output.</p>
+      <ul>
+        <li>Uses the same <strong>rich text editor</strong> as the daily log with full formatting support.</li>
+        <li>Located between the Task List and Tomorrow's Plan sections.</li>
+        <li>Write one blocker per line for best standup output. Each line becomes a separate bullet in the generated standup message.</li>
+        <li>If the Blockers field is empty, the standup message shows "none" for blockers.</li>
+        <li><strong>Auto-saves</strong> along with the rest of the entry (800ms debounce).</li>
+      </ul>
+      <div class="tip">💡 Tip: Keep blockers updated throughout the day. When you generate your standup, they're automatically included.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>📋 Carry-Over Tasks</summary>
+    <div class="detail-body">
+      <p>Never lose track of unfinished work. The app offers to bring incomplete tasks forward.</p>
+      <ul>
+        <li>When you navigate to a <strong>new day with no tasks</strong>, a banner appears if there are incomplete tasks from the previous <strong>working day</strong>.</li>
+        <li>Carry-over is <strong>weekend and holiday aware</strong> and skips weekends and marked holidays to pull tasks from the last actual working day.</li>
+        <li>Click <strong>"Carry over"</strong> to copy those tasks to the current day.</li>
+        <li>The original tasks remain on the previous day (they are not moved, they are copied).</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>📅 Calendar &amp; Holidays <span class="new-badge">NEW</span></summary>
+    <div class="detail-body">
+      <p>Navigate dates easily and manage holidays directly from the calendar.</p>
+      <ul>
+        <li><strong>Arrow buttons</strong> (← →) in the header move one day forward or back.</li>
+        <li><strong>Calendar picker:</strong> Click the 📅 icon to open a monthly calendar. Dates with entries show a blue dot.</li>
+        <li><strong>Weekend highlighting:</strong> Saturdays and Sundays are visually muted in the calendar.</li>
+        <li><strong>Holiday management:</strong> Right-click any date in the calendar to mark it as a holiday (with a label) or remove an existing holiday. Holidays show as a red dot.</li>
+        <li><strong>Workload heatmap:</strong> Days are color-coded with green intensity based on task count (see the Workload Heatmap section below for details).</li>
+        <li><strong>"Today" button</strong> appears when you're not on the current date. Click it to jump back.</li>
+        <li><strong>Sidebar date list:</strong> Click any date in the sidebar to jump directly to that entry.</li>
+        <li><strong>Keyboard:</strong> <kbd>Alt</kbd>+<kbd>←</kbd> / <kbd>Alt</kbd>+<kbd>→</kbd> for quick navigation.</li>
+      </ul>
+      <div class="tip">💡 Tip: Holidays affect task carry-over. If Friday's tasks are incomplete and Monday is a holiday, carry-over will still pull from Friday on Tuesday.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>📊 Kanban Board <span class="new-badge">NEW</span></summary>
+    <div class="detail-body">
+      <p>View all your tasks across dates in a visual Kanban board with three columns.</p>
+      <ul>
+        <li>Switch to Kanban view using the <strong>board icon</strong> in the sidebar or via the Command Palette.</li>
+        <li>Tasks are organized into <strong>To Do</strong>, <strong>In Progress</strong>, and <strong>Done</strong> columns.</li>
+        <li><strong>Drag and drop</strong> tasks between columns to update their status.</li>
+        <li><strong>Smart status sync:</strong> Starting a timer auto-moves a task to "In Progress". Dragging to "Done" auto-stops any running timer.</li>
+        <li><strong>Navigate to day:</strong> <kbd>Alt</kbd>+Click any card (or click the date label) to jump to that task's day in the diary view.</li>
+        <li><strong>Filter by project</strong> using the dropdown at the top to focus on specific work.</li>
+        <li>Each card shows the task text, project badge, date, and time tracked.</li>
+        <li>Toggle task completion directly from the Kanban card.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>📈 Statistics Dashboard <span class="new-badge">NEW</span></summary>
+    <div class="detail-body">
+      <p>Visualize your productivity with charts and metrics.</p>
+      <ul>
+        <li>Switch to Stats view using the <strong>chart icon</strong> in the sidebar or via the Command Palette.</li>
+        <li><strong>Completion rate:</strong> See your overall task completion percentage in a ring chart.</li>
+        <li><strong>Streak tracker:</strong> Current streak, longest streak, and total active days.</li>
+        <li><strong>Time per project:</strong> Horizontal bar chart showing hours spent on each project.</li>
+        <li><strong>Weekly completions:</strong> Line chart tracking how many tasks you complete each week.</li>
+        <li><strong>Date range selector:</strong> Filter statistics by Last 7 days, 30 days, 90 days, or All Time.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>📄 Task Templates <span class="new-badge">NEW</span></summary>
+    <div class="detail-body">
+      <p>Save frequently-used task sets as templates and apply them with one click.</p>
+      <ul>
+        <li>Click the <strong>template menu</strong> below the task list to manage templates.</li>
+        <li><strong>Save current tasks as template:</strong> Capture your current day's task list as a reusable template.</li>
+        <li><strong>Apply a template:</strong> Instantly add a set of predefined tasks to the current day.</li>
+        <li><strong>Recurring templates:</strong> Mark a template as "recurring" and its tasks will be <strong>automatically added</strong> to each new day.</li>
+        <li>Edit or delete templates from the template menu.</li>
+      </ul>
+      <div class="tip">💡 Tip: Create a "Daily Standup" recurring template with tasks like "Check emails", "Review PRs", "Update Jira" to automate your morning routine.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>🌙 Dark Mode <span class="new-badge">NEW</span></summary>
+    <div class="detail-body">
+      <p>Switch between light, dark, and system-matched themes.</p>
+      <ul>
+        <li>Find the <strong>theme toggle</strong> at the bottom of the sidebar.</li>
+        <li>Click to cycle through: <strong>Light → System → Dark</strong>.</li>
+        <li><strong>System mode</strong> automatically follows your OS dark mode preference and updates in real time.</li>
+        <li>Your preference is saved and remembered across sessions.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>🔍 Search</summary>
+    <div class="detail-body">
+      <p>Find past entries quickly with full-text search.</p>
+      <ul>
+        <li>Use the <strong>search bar</strong> in the sidebar to search across all daily logs and tomorrow's plans.</li>
+        <li>Results show matching dates with snippets. Click any result to navigate to that day.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>📋 Standup Generator <span class="new-badge">NEW</span></summary>
+    <div class="detail-body">
+      <p>Generate a formatted standup message from your diary data with one click, perfect for pasting into Slack, Teams, or email.</p>
+      <ul>
+        <li>Click the <strong>clipboard icon</strong> (📋) in the header bar to generate your standup message.</li>
+        <li>The standup message includes:
+          <ul>
+            <li><strong>Yesterday's completed tasks</strong>, pulled from the previous working day's task list</li>
+            <li><strong>Key highlights</strong> from yesterday's daily log</li>
+            <li><strong>Today's plan</strong>, including pending tasks for the current day</li>
+            <li><strong>Blockers</strong> pulled from today's Blockers field (shows "none" if empty)</li>
+          </ul>
+        </li>
+        <li>The message is <strong>copied to your clipboard</strong> instantly. Just paste it wherever you need it.</li>
+        <li>A "Standup copied!" tooltip appears briefly to confirm success.</li>
+        <li>Also available via the <strong>Command Palette</strong> (<kbd>Alt</kbd>+<kbd>K</kbd> → "Generate Standup").</li>
+      </ul>
+      <div class="tip">💡 Tip: Fill in your tasks and daily log at the end of each day. Next morning, one click gives you a ready-made standup message.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>🔗 Entry Backlinks <span class="new-badge">NEW</span></summary>
+    <div class="detail-body">
+      <p>Create clickable cross-references between diary entries using date links.</p>
+      <ul>
+        <li><strong>Type <code>[[2026-01-15]]</code></strong> in any Daily Log or Tomorrow's Plan editor to create a backlink.</li>
+        <li>The text auto-converts into a <strong>blue date chip</strong> showing the short date (e.g., "Jan 15") with a calendar icon.</li>
+        <li><strong>Click the chip</strong> to instantly navigate to that date's entry.</li>
+        <li><strong>"Referenced by" panel:</strong> When other entries mention the current date, a panel appears below Tomorrow's Plan showing all entries that link to today.</li>
+        <li>Click any date in the "Referenced by" list to navigate to that entry.</li>
+        <li>Works in both <strong>Daily Log</strong> and <strong>Tomorrow's Plan</strong> editors.</li>
+      </ul>
+      <div class="tip">💡 Tip: Use backlinks to connect related entries. Reference the date of an incident report, a sprint planning session, or a follow-up action item.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>📊 Workload Heatmap <span class="new-badge">NEW</span></summary>
+    <div class="detail-body">
+      <p>See your workload at a glance with a GitHub-style heatmap on the calendar.</p>
+      <ul>
+        <li>Open the <strong>calendar picker</strong> (📅 icon) where days are color-coded based on task count.</li>
+        <li><strong>Color intensity</strong> indicates workload:
+          <ul>
+            <li>No color: no tasks</li>
+            <li>Light green: 1–2 tasks</li>
+            <li>Medium green: 3–4 tasks</li>
+            <li>Darker green: 5–6 tasks</li>
+            <li>Darkest green: 7+ tasks</li>
+          </ul>
+        </li>
+        <li><strong>Hover</strong> over any day to see the exact task count in a tooltip (e.g., "5 tasks").</li>
+        <li>Works in both light and dark modes with appropriate color adjustments.</li>
+      </ul>
+      <div class="tip">💡 Tip: Use the heatmap to spot overloaded days and balance your workload across the week.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>📤 Import &amp; Export</summary>
+    <div class="detail-body">
+      <p>Back up your data or transfer it between machines using the Tools menu.</p>
+      <ul>
+        <li><strong>Export as JSON:</strong> Menu bar → Tools → Export as JSON. Creates a structured file with all entries, tasks, projects, tags, holidays, and templates.</li>
+        <li><strong>Export as CSV:</strong> Menu bar → Tools → Export as CSV. Creates a spreadsheet-ready file with one row per task per day.</li>
+        <li><strong>Export as Markdown:</strong> Menu bar → Tools → Export as Markdown. Saves the current day's log as a <code>.md</code> file.</li>
+        <li><strong>Export as PDF:</strong> Menu bar → Tools → Export as PDF. Saves the current view as a PDF document.</li>
+        <li><strong>Import from JSON:</strong> Menu bar → Tools → Import from JSON. Imports entries, tasks, projects, tags, and holidays from a previously exported JSON file.</li>
+      </ul>
+      <div class="tip">💡 Tip: Import merges data and won't delete your existing entries. Entries with the same date will be updated.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>⌨️ Command Palette <span class="new-badge">NEW</span></summary>
+    <div class="detail-body">
+      <p>Quickly access any action or navigate anywhere with a keyboard-driven command palette.</p>
+      <ul>
+        <li>Press <kbd>Alt</kbd>+<kbd>K</kbd> to open the Command Palette.</li>
+        <li>Type to <strong>fuzzy-search</strong> through all available commands.</li>
+        <li>Use <strong>arrow keys</strong> to navigate and <kbd>Enter</kbd> to execute.</li>
+        <li>Available commands include: view switching (Diary, Kanban, Stats), navigation (Today, Previous/Next day), section focus (Daily Log, Tasks, Plan), generate standup, export, and more.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>🗑️ Reset All Data</summary>
+    <div class="detail-body">
+      <p>Start fresh by deleting all entries, tasks, projects, tags, holidays, templates, and settings.</p>
+      <ul>
+        <li>Find the <strong>"Reset All Data"</strong> button at the bottom of the sidebar.</li>
+        <li>A confirmation modal appears with a <strong>5-second countdown</strong> before the delete button becomes active to prevent accidental deletions.</li>
+        <li><strong>This action is irreversible.</strong> Consider exporting your data first via Tools → Export.</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ===== KEYBOARD SHORTCUTS ===== -->
+  <h2>Keyboard Shortcuts</h2>
+  <table class="shortcut-table">
+    <tr><td colspan="2" style="font-weight: 600; color: #0D9488; padding-top: 12px;">App Shortcuts</td></tr>
+    <tr><td><kbd>Alt</kbd> + <kbd>K</kbd></td><td>Open Command Palette</td></tr>
+    <tr><td><kbd>Alt</kbd> + <kbd>S</kbd></td><td>Force save current entry</td></tr>
+    <tr><td><kbd>Alt</kbd> + <kbd>←</kbd></td><td>Navigate to the previous day</td></tr>
+    <tr><td><kbd>Alt</kbd> + <kbd>→</kbd></td><td>Navigate to the next day</td></tr>
+    <tr><td><kbd>Alt</kbd> + <kbd>T</kbd></td><td>Focus new task input</td></tr>
+    <tr><td><kbd>Alt</kbd> + <kbd>1</kbd></td><td>Focus Daily Log</td></tr>
+    <tr><td><kbd>Alt</kbd> + <kbd>2</kbd></td><td>Focus Task List</td></tr>
+    <tr><td><kbd>Alt</kbd> + <kbd>3</kbd></td><td>Focus Tomorrow's Plan</td></tr>
+    <tr><td colspan="2" style="font-weight: 600; color: #0D9488; padding-top: 12px;">Kanban Shortcuts</td></tr>
+    <tr><td><kbd>Alt</kbd> + Click card</td><td>Jump to that task's day in diary view</td></tr>
+    <tr><td>Click date label</td><td>Jump to that task's day in diary view</td></tr>
+    <tr><td colspan="2" style="font-weight: 600; color: #0D9488; padding-top: 12px;">Editor Shortcuts</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>B</kbd></td><td>Bold text</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>I</kbd></td><td>Italic text</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>U</kbd></td><td>Underline text</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td><td>Undo</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>Y</kbd></td><td>Redo</td></tr>
+    <tr><td colspan="2" style="font-weight: 600; color: #0D9488; padding-top: 12px;">Tasks</td></tr>
+    <tr><td><kbd>Enter</kbd></td><td>Add new task (when input is focused)</td></tr>
+    <tr><td>Double-click task</td><td>Edit task text inline</td></tr>
+    <tr><td>Drag ⠿ handle</td><td>Reorder tasks</td></tr>
+  </table>
+
+  <!-- ===== VIEWS ===== -->
+  <h2>Views</h2>
+  <p>Switch between views using the icons in the sidebar or via the Command Palette (<kbd>Alt</kbd>+<kbd>K</kbd>):</p>
+  <ul>
+    <li><strong>Diary View</strong> (default): Daily log, tasks, and tomorrow's plan for the selected date.</li>
+    <li><strong>Kanban Board</strong>: All tasks across dates in To Do / In Progress / Done columns with drag-and-drop.</li>
+    <li><strong>Statistics</strong>: Charts and metrics showing your productivity trends over time.</li>
+  </ul>
+
+  <!-- ===== DATA & PRIVACY ===== -->
+  <h2>Data &amp; Privacy</h2>
+  <details>
+    <summary>📂 Where is my data stored?</summary>
+    <div class="detail-body">
+      <p>All data is stored locally in a SQLite database file at:</p>
+      <p><code>%APPDATA%\onelog\onelog.db</code></p>
+      <p>Image attachments are stored in:</p>
+      <p><code>%APPDATA%\onelog\attachments\</code></p>
+      <p>No data is sent to any server. The app works <strong>100% offline</strong> with no internet connection required.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>🔒 Is my data secure?</summary>
+    <div class="detail-body">
+      <p>Your data stays entirely on your local machine. The app does not connect to external servers, analytics services, or cloud storage. Your diary is private by design.</p>
+      <p>To keep your data safe, consider:</p>
+      <ul>
+        <li>Regularly <strong>exporting a backup</strong> via Tools → Export as JSON.</li>
+        <li>Storing the export file in a secure location (e.g., encrypted drive, cloud backup folder).</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>💻 Can I move my data to another computer?</summary>
+    <div class="detail-body">
+      <p>Yes! Use the Import &amp; Export feature:</p>
+      <ul>
+        <li>On the old machine: Tools → <strong>Export as JSON</strong></li>
+        <li>Transfer the JSON file to the new machine</li>
+        <li>On the new machine: Tools → <strong>Import from JSON</strong></li>
+      </ul>
+      <p>Alternatively, you can copy the SQLite database file directly from <code>%APPDATA%\onelog\</code>.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>🔄 What happens when I update the app?</summary>
+    <div class="detail-body">
+      <p>Your existing data is <strong>always preserved</strong> during updates. The app automatically migrates your database to the new structure, adding new tables and columns as needed without touching your existing entries, tasks, or projects.</p>
+    </div>
+  </details>
+
+  <!-- ===== FAQ ===== -->
+  <h2>Frequently Asked Questions</h2>
+
+  <details>
+    <summary>The app already has sample data. Where did it come from?</summary>
+    <div class="detail-body">
+      <p>On first launch, the app is seeded with sample data (a fictional "Data Engineer on Finance Project" story spanning about a month) so you can explore features immediately. When you're ready to start fresh, use the <strong>Reset All Data</strong> button in the sidebar.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Can I run multiple timers at once?</summary>
+    <div class="detail-body">
+      <p>No. Starting a timer on a task automatically stops any other running timer. This enforces <strong>single-task focus</strong> to keep your time tracking accurate.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>What happens if I close the app while a timer is running?</summary>
+    <div class="detail-body">
+      <p>The timer start timestamp is saved in the database. If you reopen the app within 8 hours, the timer picks up from where it left off and continues counting. If more than 8 hours have passed (e.g., you left the app open overnight), the timer is <strong>automatically stopped and capped at 8 hours</strong> to prevent inflated tracking.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Does starting a timer change my task's Kanban status?</summary>
+    <div class="detail-body">
+      <p>Yes. Starting a timer automatically moves the task to <strong>"In Progress"</strong> on the Kanban board. Similarly, completing a task (checkbox or Kanban drag to "Done") automatically stops the running timer.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Can I edit entries from past dates?</summary>
+    <div class="detail-body">
+      <p>Yes. Navigate to any past date using the arrows, calendar picker, or sidebar, and edit the daily log, tasks, or tomorrow's plan freely. Changes auto-save.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>How do I mark a holiday?</summary>
+    <div class="detail-body">
+      <p>Open the calendar picker (📅 icon) and <strong>right-click</strong> on any date. Enter a label (e.g., "Diwali", "Christmas") and click "Add Holiday". Holidays are shown with a red dot in the calendar and are skipped during task carry-over.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>How do recurring templates work?</summary>
+    <div class="detail-body">
+      <p>When a template is marked as <strong>recurring</strong>, its tasks are automatically added whenever you navigate to a new day that has no tasks yet. This happens only once per day. If you delete the auto-added tasks, they won't reappear unless you apply the template manually.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>How do I access Import/Export?</summary>
+    <div class="detail-body">
+      <p>Use the <strong>Tools</strong> menu in the application menu bar (top of the window). You'll find "Import from JSON", "Export as JSON", "Export as CSV", "Export as Markdown", and "Export as PDF" there.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>How do I create a backlink to another date?</summary>
+    <div class="detail-body">
+      <p>In the Daily Log or Tomorrow's Plan editor, type <code>[[</code> followed by a date in <code>YYYY-MM-DD</code> format and then <code>]]</code>. For example, typing <code>[[2026-01-15]]</code> will auto-convert into a clickable blue chip showing "Jan 15". Click the chip to navigate to that date's entry.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>How does the standup generator work?</summary>
+    <div class="detail-body">
+      <p>Click the clipboard icon (📋) in the header bar. The app pulls your <strong>previous working day's</strong> completed tasks and log highlights, plus today's pending tasks and blockers from the Blockers field, and formats them into a standup message. The message is copied to your clipboard instantly. Just paste into Slack, Teams, or email.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>What do the green colors on the calendar mean?</summary>
+    <div class="detail-body">
+      <p>The calendar uses a <strong>workload heatmap</strong> where days with more tasks show darker green backgrounds. This gives you a quick visual overview of how busy each day was. Hover over any day to see the exact task count.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Is the app available on macOS and Linux?</summary>
+    <div class="detail-body">
+      <p>Yes! The app can be built for <strong>Windows</strong> (NSIS installer), <strong>macOS</strong> (DMG for Intel and Apple Silicon), and <strong>Linux</strong> (AppImage and .deb). Check the project repository for platform-specific build instructions.</p>
+    </div>
+  </details>
+
+  <div class="footer">
+    OneLog &nbsp;•&nbsp; Open Source &nbsp;•&nbsp; MIT License
+  </div>
+
+</body>
+</html>

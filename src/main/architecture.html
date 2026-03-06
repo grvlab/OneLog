@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneLog  - Technical Architecture</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.6;
+      padding: 32px 40px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 22px; font-weight: 700; color: #0F2623; margin-bottom: 4px; }
+    .subtitle { font-size: 13px; color: #64748b; margin-bottom: 4px; }
+    .version { font-size: 12px; color: #94a3b8; margin-bottom: 28px; }
+    h2 {
+      font-size: 15px; font-weight: 600; color: #0D9488;
+      margin-top: 32px; margin-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;
+    }
+    p, li { font-size: 13px; color: #475569; }
+    ul, ol { padding-left: 20px; margin-bottom: 12px; }
+    li { margin-bottom: 6px; }
+    code {
+      font-size: 11.5px; background: #f1f5f9;
+      padding: 1px 5px; border-radius: 3px; color: #334155;
+      font-family: 'Consolas', 'Courier New', monospace;
+    }
+    pre {
+      background: #f1f5f9; border: 1px solid #e2e8f0;
+      border-radius: 6px; padding: 12px 16px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 11.5px; color: #334155;
+      overflow-x: auto; margin: 8px 0 14px; line-height: 1.5;
+    }
+
+    /* Collapsible sections */
+    details {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    details[open] { box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    details summary {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0F2623;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::before {
+      content: '▸'; font-size: 11px; color: #94a3b8;
+      transition: transform 0.2s; display: inline-block; width: 12px;
+    }
+    details[open] summary::before { transform: rotate(90deg); }
+    details summary:hover { background: #f8fafc; }
+    .detail-body {
+      padding: 0 16px 14px 36px;
+      font-size: 12.5px; color: #64748b; line-height: 1.7;
+    }
+    .detail-body p { margin-bottom: 8px; }
+    .detail-body ul, .detail-body ol { margin: 6px 0 10px; padding-left: 16px; }
+    .detail-body li { margin-bottom: 4px; font-size: 12.5px; color: #64748b; }
+    .detail-body strong { color: #334155; }
+
+    table {
+      width: 100%; border-collapse: collapse;
+      margin: 8px 0 16px; font-size: 12.5px;
+    }
+    th {
+      text-align: left; padding: 8px 10px;
+      background: #f1f5f9; color: #334155;
+      font-weight: 600; border-bottom: 2px solid #e2e8f0;
+    }
+    td {
+      padding: 7px 10px; border-bottom: 1px solid #f1f5f9;
+      color: #475569; vertical-align: top;
+    }
+    tr:hover td { background: #fafbfc; }
+
+    .arch-box {
+      background: white; border: 1px solid #e2e8f0;
+      border-radius: 8px; padding: 16px 20px;
+      margin: 12px 0; text-align: center;
+    }
+    .arch-box pre {
+      border: none; background: transparent;
+      text-align: left; margin: 0; padding: 0;
+      font-size: 12px; line-height: 1.8;
+    }
+    .note {
+      background: #eff6ff; border-left: 3px solid #0D9488;
+      padding: 8px 12px; border-radius: 0 6px 6px 0;
+      margin: 8px 0; font-size: 12px; color: #1e40af;
+    }
+    .warn {
+      background: #fef3c7; border-left: 3px solid #f59e0b;
+      padding: 8px 12px; border-radius: 0 6px 6px 0;
+      margin: 8px 0; font-size: 12px; color: #92400e;
+    }
+    .label {
+      display: inline-block; padding: 1px 8px; font-size: 10px;
+      font-weight: 600; border-radius: 4px; margin-left: 6px;
+      vertical-align: middle;
+    }
+    .label-main { background: #dbeafe; color: #1e40af; }
+    .label-renderer { background: #d1fae5; color: #065f46; }
+    .label-db { background: #fef3c7; color: #92400e; }
+    .label-test { background: #ede9fe; color: #5b21b6; }
+
+    .footer {
+      margin-top: 36px; padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+      text-align: center; font-size: 11px; color: #94a3b8;
+    }
+    .footer a { color: #0D9488; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <h1>Technical Design &amp; Architecture</h1>
+  <div class="subtitle">OneLog  - Desktop Application</div>
+  <div class="version">Version 1.0.0</div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>1. System Overview</h2>
+  <p>OneLog is a <strong>lightweight, offline-first desktop application</strong> for working professionals to log daily activities, track tasks with time, manage projects, and plan ahead. All data is stored locally  - nothing leaves the user's machine.</p>
+
+  <div class="arch-box">
+    <pre>
+┌─────────────────────────────────────────────────────┐
+│                   Electron Shell                    │
+│                  (Main Process)                     │
+│                                                     │
+│  ┌──────────────┐   IPC Bridge   ┌───────────────┐ │
+│  │   main.js    │◄─────────────►│   preload.js   │ │
+│  │  • App init  │  (invoke/on)   │  • contextBridge│ │
+│  │  • Menu bar  │                │  • window.api  │ │
+│  │  • Dialogs   │                └───────┬───────┘ │
+│  │  • IPC       │                        │         │
+│  └──────┬───────┘                        │         │
+│         │                                │         │
+│  ┌──────▼───────┐              ┌─────────▼───────┐ │
+│  │ database.js  │              │ Renderer Process │ │
+│  │ (SQLite)     │              │ (React + Vite)   │ │
+│  │  • CRUD ops  │              │  • App.tsx       │ │
+│  │  • Seed data │              │  • Components    │ │
+│  │  • Import/   │              │  • Tailwind CSS  │ │
+│  │    Export     │              │  • Tiptap Editor │ │
+│  └──────────────┘              └─────────────────┘ │
+└─────────────────────────────────────────────────────┘
+         │                                 │
+    ┌────▼────┐                    ┌───────▼───────┐
+    │ SQLite  │                    │  index.html   │
+    │  .db    │                    │  (Vite build) │
+    └─────────┘                    └───────────────┘</pre>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>2. Technology Stack</h2>
+  <table>
+    <tr><th>Layer</th><th>Technology</th><th>Version</th><th>Purpose</th></tr>
+    <tr><td>Desktop Shell</td><td><strong>Electron</strong></td><td>40.x</td><td>Cross-platform desktop wrapper, native OS integration</td></tr>
+    <tr><td>UI Framework</td><td><strong>React</strong></td><td>19.x</td><td>Component-based reactive UI</td></tr>
+    <tr><td>Language</td><td><strong>TypeScript</strong></td><td>5.9</td><td>Type-safe renderer code</td></tr>
+    <tr><td>Build Tool</td><td><strong>Vite</strong></td><td>7.x</td><td>Dev server (HMR) + production bundler</td></tr>
+    <tr><td>Styling</td><td><strong>Tailwind CSS</strong></td><td>4.x</td><td>Utility-first CSS framework</td></tr>
+    <tr><td>Rich Text</td><td><strong>Tiptap</strong></td><td>3.x</td><td>ProseMirror-based WYSIWYG editor</td></tr>
+    <tr><td>Database</td><td><strong>better-sqlite3</strong></td><td>12.x</td><td>Embedded SQLite with sync API</td></tr>
+    <tr><td>Installer</td><td><strong>electron-builder</strong></td><td>26.x</td><td>NSIS Windows installer</td></tr>
+    <tr><td>Testing</td><td><strong>Vitest</strong></td><td>4.x</td><td>Unit testing framework</td></tr>
+    <tr><td>CI/CD</td><td><strong>Azure DevOps</strong></td><td> -</td><td>Automated build pipeline</td></tr>
+  </table>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>3. Architecture Details</h2>
+  <p class="subtitle" style="margin-bottom: 12px;">Click any section below to expand.</p>
+
+  <!-- 3.1 Main Process -->
+  <details>
+    <summary>3.1 Main Process <span class="label label-main">Electron</span></summary>
+    <div class="detail-body">
+      <p>The main process (<code>src/main/main.js</code>) is the entry point of the application. It runs in a Node.js environment with full OS access.</p>
+      <p><strong>Responsibilities:</strong></p>
+      <ul>
+        <li><strong>Window Management</strong>  - Creates the main <code>BrowserWindow</code> (1000×700, min 800×550) and secondary help/architecture windows</li>
+        <li><strong>Application Menu</strong>  - Builds a native menu bar with File, Tools (Import/Export), Edit, View, and Help menus</li>
+        <li><strong>IPC Handler Registration</strong>  - Registers 40+ <code>ipcMain.handle()</code> channels for database operations</li>
+        <li><strong>Database Initialization</strong>  - Calls <code>db.initialize()</code> and <code>db.runSeedIfNeeded()</code> on startup</li>
+        <li><strong>File Dialogs</strong>  - Native open/save dialogs for import/export via <code>dialog.showOpenDialog()</code> / <code>dialog.showSaveDialog()</code></li>
+        <li><strong>CSV Generation</strong>  - Server-side CSV formatting with proper escaping for export</li>
+      </ul>
+      <p><strong>Lifecycle:</strong></p>
+      <ol>
+        <li><code>app.whenReady()</code> → Initialize DB → Register IPC → Build Menu → Create Window</li>
+        <li>In dev: loads <code>http://localhost:5174</code> (Vite dev server)</li>
+        <li>In prod: loads <code>dist/renderer/index.html</code> from asar archive</li>
+      </ol>
+    </div>
+  </details>
+
+  <!-- 3.2 Preload Script -->
+  <details>
+    <summary>3.2 Preload &amp; IPC Bridge <span class="label label-main">Security</span></summary>
+    <div class="detail-body">
+      <p>The preload script (<code>src/main/preload.js</code>) runs in a sandboxed context before the renderer page loads. It bridges main ↔ renderer communication securely.</p>
+      <p><strong>Security model:</strong></p>
+      <ul>
+        <li><code>contextIsolation: true</code>  - Renderer cannot access Node.js APIs directly</li>
+        <li><code>nodeIntegration: false</code>  - No <code>require()</code> in renderer</li>
+        <li><code>contextBridge.exposeInMainWorld('api', {...})</code>  - Exposes a curated, typed API surface as <code>window.api</code></li>
+      </ul>
+      <p><strong>Communication patterns:</strong></p>
+      <ul>
+        <li><strong>Request/Response:</strong> <code>ipcRenderer.invoke(channel, args)</code> → returns a Promise (used for all CRUD operations)</li>
+        <li><strong>Menu Events:</strong> <code>ipcRenderer.on(channel, callback)</code> → listens for menu-triggered actions (export, import-complete). Returns a cleanup function for React <code>useEffect</code>.</li>
+      </ul>
+      <p><strong>Exposed API surface (window.api):</strong></p>
+      <table>
+        <tr><th>Category</th><th>Methods</th></tr>
+        <tr><td>Entries</td><td><code>getEntry</code>, <code>saveEntry</code>, <code>searchEntries</code>, <code>getEntryDates</code>, <code>getEntriesMentioningDate</code></td></tr>
+        <tr><td>Tasks</td><td><code>getTasks</code>, <code>addTask</code>, <code>toggleTask</code>, <code>deleteTask</code>, <code>updateTaskText</code>, <code>updateTaskProject</code>, <code>reorderTasks</code>, <code>updateTaskStatus</code></td></tr>
+        <tr><td>Timers</td><td><code>startTimer</code>, <code>stopTimer</code>, <code>setManualTime</code></td></tr>
+        <tr><td>Projects</td><td><code>getProjects</code>, <code>addProject</code>, <code>updateProject</code>, <code>deleteProject</code></td></tr>
+        <tr><td>Tags</td><td><code>getTags</code>, <code>addTag</code>, <code>updateTag</code>, <code>deleteTag</code>, <code>getEntryTags</code>, <code>setEntryTags</code></td></tr>
+        <tr><td>Holidays</td><td><code>getHolidays</code>, <code>setHoliday</code>, <code>removeHoliday</code></td></tr>
+        <tr><td>Templates</td><td><code>getTemplates</code>, <code>saveTemplate</code>, <code>deleteTemplate</code>, <code>updateTemplateRecurring</code></td></tr>
+        <tr><td>Workload</td><td><code>getWorkloadPerDate</code></td></tr>
+        <tr><td>Stats</td><td><code>getCompletionRate</code>, <code>getStreakData</code>, <code>getTimePerProject</code>, <code>getTasksCompletedPerWeek</code></td></tr>
+        <tr><td>Carry-over</td><td><code>getIncompleteTasks</code>, <code>carryOverTasks</code></td></tr>
+        <tr><td>Settings</td><td><code>getSetting</code>, <code>setSetting</code></td></tr>
+        <tr><td>Data</td><td><code>exportData</code>, <code>resetAllData</code></td></tr>
+        <tr><td>Images</td><td><code>pickImage</code></td></tr>
+        <tr><td>Events</td><td><code>onMenuExport</code>, <code>onMenuImportComplete</code></td></tr>
+      </table>
+    </div>
+  </details>
+
+  <!-- 3.3 Renderer Process -->
+  <details>
+    <summary>3.3 Renderer Process <span class="label label-renderer">React + Vite</span></summary>
+    <div class="detail-body">
+      <p>The renderer runs in a Chromium browser context built with <strong>React 19 + TypeScript + Vite + Tailwind CSS 4</strong>.</p>
+
+      <p><strong>Entry point:</strong> <code>src/renderer/main.tsx</code> → renders <code>&lt;App /&gt;</code></p>
+
+      <p><strong>Component tree:</strong></p>
+      <pre>App.tsx
+├── Sidebar
+│   ├── Logo + branding
+│   ├── Search (expandable)
+│   ├── View switcher (Diary / Kanban / Stats)
+│   ├── Date list (with entry highlights + auto-scroll)
+│   ├── ProjectManager (CRUD modal)
+│   ├── TagManager (CRUD modal)
+│   ├── Dark mode toggle
+│   └── Reset All Data (with 5s countdown confirmation)
+├── Header
+│   ├── Date navigation (← date →)
+│   ├── CalendarPicker (monthly dropdown + workload heatmap)
+│   ├── "Today" button
+│   ├── Standup Generator (clipboard icon)
+│   ├── HeaderTimer (global active timer indicator)
+│   └── Save status
+├── Content Area (Diary View)
+│   ├── Carry-over banner (conditional)
+│   ├── Tag bar (entry tags)
+│   ├── DailyLog → RichTextEditor (Tiptap + Backlink ext)
+│   ├── TaskList
+│   │   ├── Task rows (checkbox, text, project badge, timer, actions)
+│   │   ├── Add task input + project selector
+│   │   └── Template menu
+│   ├── TomorrowPlan → RichTextEditor (Tiptap + Backlink ext)
+│   └── BacklinksPanel ("Referenced by" cross-references)
+├── Content Area (Kanban View)
+│   └── KanbanBoard (To Do / In Progress / Done columns)
+├── Content Area (Stats View)
+│   └── StatsView (completion rate, streaks, charts)
+├── CommandPalette (Alt+K overlay)
+└── GuidedTour (9-step overlay, shown on first launch)</pre>
+
+      <p><strong>State management:</strong> All state lives in <code>App.tsx</code> using React hooks (<code>useState</code>, <code>useEffect</code>, <code>useCallback</code>). No external state library  - the app's data complexity doesn't warrant one.</p>
+
+      <p><strong>Key patterns:</strong></p>
+      <ul>
+        <li><strong>Auto-save:</strong> Debounced at 800ms via <code>useEffect</code> + <code>setTimeout</code></li>
+        <li><strong>Timer auto-stop:</strong> Starting a timer stops all other running timers. Completing a task auto-stops its timer.</li>
+        <li><strong>Date handling:</strong> Shared <code>formatDate()</code> utility in <code>src/renderer/utils.ts</code> uses local date parts (not <code>toISOString()</code>) to avoid timezone shifts</li>
+        <li><strong>Menu integration:</strong> <code>useEffect</code> hooks subscribe to <code>onMenuExport</code> / <code>onMenuImportComplete</code> events with proper cleanup</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- 3.4 Rich Text Editor -->
+  <details>
+    <summary>3.4 Rich Text Editor <span class="label label-renderer">Tiptap</span></summary>
+    <div class="detail-body">
+      <p>Both the Daily Log and Tomorrow's Plan use the <code>RichTextEditor</code> component, built on <strong>Tiptap</strong> (a headless ProseMirror wrapper).</p>
+      <p><strong>Extensions loaded:</strong></p>
+      <ul>
+        <li><code>StarterKit</code>  - paragraphs, headings (H2, H3), bold, italic, strike, lists, blockquotes, code blocks, horizontal rules</li>
+        <li><code>Underline</code>  - underline formatting</li>
+        <li><code>Placeholder</code>  - grey placeholder text when empty</li>
+        <li><code>ResizableImage</code>  - custom Node extension for inserting and resizing images inline (drag-to-resize handles)</li>
+        <li><code>Backlink</code>  - custom inline atom Node extension for date cross-references. Input rule: <code>[[YYYY-MM-DD]]</code> auto-converts to a clickable blue date chip. HTML serialization: <code>&lt;span data-type="backlink" data-date="2026-01-15"&gt;&lt;/span&gt;</code></li>
+      </ul>
+      <p><strong>Formatting toolbar:</strong> Bold, Italic, Underline, Strike, H2, H3, Bullet List, Ordered List, Blockquote, Code Block, Horizontal Rule, Insert Image</p>
+      <p><strong>Data format:</strong> Content is stored as <strong>HTML strings</strong> in the SQLite database. Tiptap serializes/deserializes to/from HTML via <code>editor.getHTML()</code> and the <code>content</code> prop. Backlink nodes are stored as <code>&lt;span data-type="backlink" data-date="..."&gt;</code> elements, enabling database search for cross-references.</p>
+    </div>
+  </details>
+
+  <!-- 3.5 Styling -->
+  <details>
+    <summary>3.5 Styling System <span class="label label-renderer">Tailwind</span></summary>
+    <div class="detail-body">
+      <p>Uses <strong>Tailwind CSS 4</strong> with the Vite plugin (<code>@tailwindcss/vite</code>).</p>
+      <p><strong>Custom theme tokens</strong> defined in <code>src/renderer/index.css</code> via <code>@theme</code>:</p>
+      <table>
+        <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+        <tr><td><code>--color-iqz-navy</code></td><td><code>#0F2623</code></td><td>Sidebar background, headings</td></tr>
+        <tr><td><code>--color-iqz-navy-light</code></td><td><code>#163532</code></td><td>Sidebar hover states</td></tr>
+        <tr><td><code>--color-iqz-blue</code></td><td><code>#0D9488</code></td><td>Primary color, buttons, links</td></tr>
+        <tr><td><code>--color-iqz-blue-light</code></td><td><code>#14B8A6</code></td><td>Button hover states</td></tr>
+        <tr><td><code>--color-iqz-slate</code></td><td><code>#7CA8A3</code></td><td>Muted sidebar text</td></tr>
+      </table>
+      <p><strong>Custom CSS:</strong> Tiptap editor styles, custom scrollbar for dark sidebar, keyframe animations (gradient, pulse-dot for timer).</p>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>4. Database Design</h2>
+
+  <details>
+    <summary>4.1 Schema  - Entity Relationship <span class="label label-db">SQLite</span></summary>
+    <div class="detail-body">
+      <pre>
+┌──────────────────┐       ┌──────────────────────────┐
+│     entries      │       │          tasks            │
+├──────────────────┤       ├──────────────────────────┤
+│ id (PK, AUTO)    │       │ id (PK, AUTO)            │
+│ date (UNIQUE)    │──1:N──│ entry_date (FK → date)   │
+│ log_content      │       │ text                     │
+│ tomorrows_plan   │       │ completed (0/1)          │
+│ created_at       │       │ position                 │
+│ updated_at       │       │ time_spent (seconds)     │
+└────────┬─────────┘       │ timer_started_at (ISO)   │
+         │                 │ project_id (FK → projects)│
+         │  1:N            │ status (todo/in_progress/ │
+         │                 │         done)             │
+┌────────▼─────────┐       │ created_at               │
+│   entry_tags     │       └──────────────────────────┘
+├──────────────────┤                │
+│ id (PK, AUTO)    │  ┌─────────────┘
+│ entry_date (FK)  │  │
+│ tag_id (FK)      │  │  ┌──────────────────┐
+└────────┬─────────┘  │  │    projects      │
+         │            │  ├──────────────────┤
+┌────────▼─────────┐  └──│ id (PK, AUTO)    │
+│      tags        │     │ name (UNIQUE)    │
+├──────────────────┤     │ color            │
+│ id (PK, AUTO)    │     │ archived (0/1)   │
+│ name (UNIQUE)    │     │ created_at       │
+│ color            │     └──────────────────┘
+│ created_at       │
+└──────────────────┘     ┌──────────────────┐
+                         │     holidays     │
+┌──────────────────┐     ├──────────────────┤
+│  task_templates  │     │ id (PK, AUTO)    │
+├──────────────────┤     │ date (UNIQUE)    │
+│ id (PK, AUTO)    │     │ label            │
+│ name (UNIQUE)    │     └──────────────────┘
+│ tasks_json       │
+│ recurring (0/1)  │     ┌──────────────────┐
+│ created_at       │     │     settings     │
+└──────────────────┘     ├──────────────────┤
+                         │ key (PK)         │
+                         │ value            │
+                         └──────────────────┘</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>4.2 Table Details</summary>
+    <div class="detail-body">
+      <p><strong>entries</strong>  - One row per calendar date</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td><code>id</code></td><td>INTEGER PK</td><td>Auto-increment</td></tr>
+        <tr><td><code>date</code></td><td>TEXT UNIQUE</td><td>Format: <code>YYYY-MM-DD</code></td></tr>
+        <tr><td><code>log_content</code></td><td>TEXT</td><td>HTML from Tiptap editor</td></tr>
+        <tr><td><code>tomorrows_plan</code></td><td>TEXT</td><td>HTML from Tiptap editor</td></tr>
+        <tr><td><code>created_at</code></td><td>TEXT</td><td><code>datetime('now')</code></td></tr>
+        <tr><td><code>updated_at</code></td><td>TEXT</td><td>Updated on each save</td></tr>
+      </table>
+
+      <p><strong>tasks</strong>  - Multiple tasks per entry date</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td><code>id</code></td><td>INTEGER PK</td><td>Auto-increment</td></tr>
+        <tr><td><code>entry_date</code></td><td>TEXT</td><td>Links to entries.date</td></tr>
+        <tr><td><code>text</code></td><td>TEXT</td><td>Task description</td></tr>
+        <tr><td><code>completed</code></td><td>INTEGER</td><td>0 = open, 1 = done</td></tr>
+        <tr><td><code>position</code></td><td>INTEGER</td><td>Sort order within the day</td></tr>
+        <tr><td><code>time_spent</code></td><td>INTEGER</td><td>Accumulated seconds</td></tr>
+        <tr><td><code>timer_started_at</code></td><td>TEXT</td><td>ISO timestamp if timer is running, NULL otherwise</td></tr>
+        <tr><td><code>project_id</code></td><td>INTEGER</td><td>FK to projects.id (nullable)</td></tr>
+        <tr><td><code>status</code></td><td>TEXT</td><td><code>todo</code> | <code>in_progress</code> | <code>done</code> (for Kanban)</td></tr>
+        <tr><td><code>created_at</code></td><td>TEXT</td><td><code>datetime('now')</code></td></tr>
+      </table>
+
+      <p><strong>projects</strong>  - Color-coded task categories</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td><code>id</code></td><td>INTEGER PK</td><td>Auto-increment</td></tr>
+        <tr><td><code>name</code></td><td>TEXT UNIQUE</td><td>Project display name</td></tr>
+        <tr><td><code>color</code></td><td>TEXT</td><td>Hex color code (default: <code>#6366f1</code>)</td></tr>
+        <tr><td><code>archived</code></td><td>INTEGER</td><td>0 = active, 1 = archived</td></tr>
+        <tr><td><code>created_at</code></td><td>TEXT</td><td><code>datetime('now')</code></td></tr>
+      </table>
+
+      <p><strong>tags</strong>  - Color-coded entry labels</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td><code>id</code></td><td>INTEGER PK</td><td>Auto-increment</td></tr>
+        <tr><td><code>name</code></td><td>TEXT UNIQUE</td><td>Tag display name</td></tr>
+        <tr><td><code>color</code></td><td>TEXT</td><td>Hex color code</td></tr>
+        <tr><td><code>created_at</code></td><td>TEXT</td><td><code>datetime('now')</code></td></tr>
+      </table>
+
+      <p><strong>entry_tags</strong>  - Many-to-many link between entries and tags</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td><code>id</code></td><td>INTEGER PK</td><td>Auto-increment</td></tr>
+        <tr><td><code>entry_date</code></td><td>TEXT</td><td>FK to entries.date</td></tr>
+        <tr><td><code>tag_id</code></td><td>INTEGER</td><td>FK to tags.id</td></tr>
+      </table>
+      <p>Unique constraint on <code>(entry_date, tag_id)</code>.</p>
+
+      <p><strong>holidays</strong>  - Marked holidays for calendar and carry-over</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td><code>id</code></td><td>INTEGER PK</td><td>Auto-increment</td></tr>
+        <tr><td><code>date</code></td><td>TEXT UNIQUE</td><td>Format: <code>YYYY-MM-DD</code></td></tr>
+        <tr><td><code>label</code></td><td>TEXT</td><td>Holiday description</td></tr>
+      </table>
+
+      <p><strong>task_templates</strong>  - Reusable task sets</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td><code>id</code></td><td>INTEGER PK</td><td>Auto-increment</td></tr>
+        <tr><td><code>name</code></td><td>TEXT UNIQUE</td><td>Template name</td></tr>
+        <tr><td><code>tasks_json</code></td><td>TEXT</td><td>JSON array of <code>{text, projectId}</code></td></tr>
+        <tr><td><code>recurring</code></td><td>INTEGER</td><td>0 = manual, 1 = auto-add on new day</td></tr>
+        <tr><td><code>created_at</code></td><td>TEXT</td><td><code>datetime('now')</code></td></tr>
+      </table>
+
+      <p><strong>settings</strong>  - Key-value configuration store</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td><code>key</code></td><td>TEXT PK</td><td>Setting identifier</td></tr>
+        <tr><td><code>value</code></td><td>TEXT</td><td>Setting value</td></tr>
+      </table>
+      <p>Used keys: <code>onboarding_complete</code> (<code>pending_tour</code> | <code>true</code>), <code>theme</code> (<code>light</code> | <code>dark</code> | <code>system</code>)</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>4.3 Database Configuration &amp; Pragmas</summary>
+    <div class="detail-body">
+      <ul>
+        <li><strong>Engine:</strong> <code>better-sqlite3</code>  - synchronous, in-process SQLite (no async overhead)</li>
+        <li><strong>File location:</strong> <code>%APPDATA%\mydailydiary\mydailydiary.db</code></li>
+        <li><strong>Journal mode:</strong> <code>WAL</code> (Write-Ahead Logging)  - better concurrent read performance and crash resilience</li>
+        <li><strong>Foreign keys:</strong> <code>ON</code>  - enforced at the database level</li>
+        <li><strong>Indexes:</strong> <code>idx_tasks_date</code> on <code>tasks(entry_date)</code>, <code>idx_entries_date</code> on <code>entries(date)</code>, unique constraint on <code>entry_tags(entry_date, tag_id)</code></li>
+      </ul>
+      <p><strong>Migration strategy:</strong> Additive <code>ALTER TABLE</code> wrapped in try/catch  - checks if column exists before adding. No versioned migration files needed for this scale.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>4.4 Key Query Patterns</summary>
+    <div class="detail-body">
+      <p><strong>Task retrieval with project JOIN:</strong></p>
+      <pre>SELECT t.*, p.name as project_name, p.color as project_color
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.id
+WHERE t.id = ?</pre>
+      <p>This pattern is extracted into a <code>getTaskById(id)</code> helper used by all task mutation functions (add, toggle, update, timer operations).</p>
+
+      <p><strong>Entry upsert (insert or update):</strong></p>
+      <pre>INSERT INTO entries (date, log_content, tomorrows_plan)
+VALUES (?, ?, ?)
+ON CONFLICT(date) DO UPDATE SET
+  log_content = excluded.log_content,
+  tomorrows_plan = excluded.tomorrows_plan,
+  updated_at = datetime('now')</pre>
+
+      <p><strong>Backlink search (cross-references):</strong></p>
+      <pre>SELECT date, log_content, tomorrows_plan FROM entries
+WHERE (log_content LIKE '%data-date="2026-01-15"%'
+   OR tomorrows_plan LIKE '%data-date="2026-01-15"%')
+  AND date != '2026-01-15'
+ORDER BY date DESC LIMIT 50</pre>
+      <p>Searches stored HTML for backlink node markers (<code>data-date</code> attributes) to find all entries that reference a given date.</p>
+
+      <p><strong>Workload heatmap aggregation:</strong></p>
+      <pre>SELECT entry_date as date, COUNT(*) as task_count,
+  SUM(CASE WHEN completed=1 THEN 1 ELSE 0 END) as completed_count,
+  SUM(COALESCE(time_spent,0)) as total_time
+FROM tasks WHERE entry_date >= ? AND entry_date <= ?
+GROUP BY entry_date</pre>
+
+      <p><strong>Import transaction:</strong> Uses <code>db.transaction()</code> to wrap project, entry, and task inserts in a single atomic operation. Projects are imported first so tasks can resolve <code>project_name</code> → <code>project_id</code>.</p>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>5. IPC Channel Reference</h2>
+  <details>
+    <summary>Complete IPC Channel Map (40+ channels)</summary>
+    <div class="detail-body">
+      <table>
+        <tr><th>Channel</th><th>Direction</th><th>Payload</th><th>Response</th></tr>
+        <tr><td colspan="4" style="font-weight: 600; color: #0D9488; padding-top: 8px;">Entries</td></tr>
+        <tr><td><code>entry:get</code></td><td>Renderer → Main</td><td><code>date: string</code></td><td><code>Entry | null</code></td></tr>
+        <tr><td><code>entry:save</code></td><td>Renderer → Main</td><td><code>{date, logContent, tomorrowsPlan}</code></td><td><code>Entry</code></td></tr>
+        <tr><td><code>entries:search</code></td><td>Renderer → Main</td><td><code>query: string</code></td><td><code>SearchResult[]</code></td></tr>
+        <tr><td><code>entries:dates</code></td><td>Renderer → Main</td><td> -</td><td><code>string[]</code></td></tr>
+        <tr><td><code>entries:mentioning</code></td><td>Renderer → Main</td><td><code>date: string</code></td><td><code>BacklinkEntry[]</code></td></tr>
+        <tr><td colspan="4" style="font-weight: 600; color: #0D9488; padding-top: 8px;">Tasks</td></tr>
+        <tr><td><code>tasks:get</code></td><td>Renderer → Main</td><td><code>date: string</code></td><td><code>Task[]</code></td></tr>
+        <tr><td><code>tasks:add</code></td><td>Renderer → Main</td><td><code>{date, text, projectId?}</code></td><td><code>Task</code></td></tr>
+        <tr><td><code>tasks:toggle</code></td><td>Renderer → Main</td><td><code>id: number</code></td><td><code>Task</code></td></tr>
+        <tr><td><code>tasks:delete</code></td><td>Renderer → Main</td><td><code>id: number</code></td><td><code>{success}</code></td></tr>
+        <tr><td><code>tasks:updateText</code></td><td>Renderer → Main</td><td><code>{id, text}</code></td><td><code>Task</code></td></tr>
+        <tr><td><code>tasks:updateProject</code></td><td>Renderer → Main</td><td><code>{id, projectId}</code></td><td><code>Task</code></td></tr>
+        <tr><td><code>tasks:updateStatus</code></td><td>Renderer → Main</td><td><code>{id, status}</code></td><td><code>Task</code></td></tr>
+        <tr><td><code>tasks:reorder</code></td><td>Renderer → Main</td><td><code>{orderedIds: number[]}</code></td><td><code>{success}</code></td></tr>
+        <tr><td><code>tasks:startTimer</code></td><td>Renderer → Main</td><td><code>id: number</code></td><td><code>Task</code></td></tr>
+        <tr><td><code>tasks:stopTimer</code></td><td>Renderer → Main</td><td><code>id: number</code></td><td><code>Task</code></td></tr>
+        <tr><td><code>tasks:setManualTime</code></td><td>Renderer → Main</td><td><code>{id, seconds}</code></td><td><code>Task</code></td></tr>
+        <tr><td><code>tasks:incomplete</code></td><td>Renderer → Main</td><td><code>date: string</code></td><td><code>Task[]</code></td></tr>
+        <tr><td><code>tasks:carryOver</code></td><td>Renderer → Main</td><td><code>{fromDate, toDate}</code></td><td><code>Task[]</code></td></tr>
+        <tr><td colspan="4" style="font-weight: 600; color: #0D9488; padding-top: 8px;">Projects</td></tr>
+        <tr><td><code>projects:list</code></td><td>Renderer → Main</td><td> -</td><td><code>Project[]</code></td></tr>
+        <tr><td><code>projects:add</code></td><td>Renderer → Main</td><td><code>{name, color}</code></td><td><code>Project</code></td></tr>
+        <tr><td><code>projects:update</code></td><td>Renderer → Main</td><td><code>{id, name, color}</code></td><td><code>Project</code></td></tr>
+        <tr><td><code>projects:delete</code></td><td>Renderer → Main</td><td><code>id: number</code></td><td><code>{success}</code></td></tr>
+        <tr><td colspan="4" style="font-weight: 600; color: #0D9488; padding-top: 8px;">Tags</td></tr>
+        <tr><td><code>tags:list</code></td><td>Renderer → Main</td><td> -</td><td><code>Tag[]</code></td></tr>
+        <tr><td><code>tags:add</code></td><td>Renderer → Main</td><td><code>{name, color}</code></td><td><code>Tag</code></td></tr>
+        <tr><td><code>tags:update</code></td><td>Renderer → Main</td><td><code>{id, name, color}</code></td><td><code>Tag</code></td></tr>
+        <tr><td><code>tags:delete</code></td><td>Renderer → Main</td><td><code>id: number</code></td><td><code>{success}</code></td></tr>
+        <tr><td><code>tags:forEntry</code></td><td>Renderer → Main</td><td><code>date: string</code></td><td><code>Tag[]</code></td></tr>
+        <tr><td><code>tags:setForEntry</code></td><td>Renderer → Main</td><td><code>{date, tagIds: number[]}</code></td><td><code>{success}</code></td></tr>
+        <tr><td colspan="4" style="font-weight: 600; color: #0D9488; padding-top: 8px;">Holidays</td></tr>
+        <tr><td><code>holidays:list</code></td><td>Renderer → Main</td><td> -</td><td><code>Holiday[]</code></td></tr>
+        <tr><td><code>holidays:set</code></td><td>Renderer → Main</td><td><code>{date, label}</code></td><td><code>Holiday</code></td></tr>
+        <tr><td><code>holidays:remove</code></td><td>Renderer → Main</td><td><code>date: string</code></td><td><code>{success}</code></td></tr>
+        <tr><td colspan="4" style="font-weight: 600; color: #0D9488; padding-top: 8px;">Templates</td></tr>
+        <tr><td><code>templates:list</code></td><td>Renderer → Main</td><td> -</td><td><code>Template[]</code></td></tr>
+        <tr><td><code>templates:save</code></td><td>Renderer → Main</td><td><code>{name, tasks_json, recurring}</code></td><td><code>Template</code></td></tr>
+        <tr><td><code>templates:delete</code></td><td>Renderer → Main</td><td><code>id: number</code></td><td><code>{success}</code></td></tr>
+        <tr><td><code>templates:updateRecurring</code></td><td>Renderer → Main</td><td><code>{id, recurring}</code></td><td><code>Template</code></td></tr>
+        <tr><td colspan="4" style="font-weight: 600; color: #0D9488; padding-top: 8px;">Workload &amp; Statistics</td></tr>
+        <tr><td><code>workload:perDate</code></td><td>Renderer → Main</td><td><code>{startDate, endDate}</code></td><td><code>WorkloadData[]</code></td></tr>
+        <tr><td><code>stats:completionRate</code></td><td>Renderer → Main</td><td><code>{startDate, endDate}</code></td><td><code>{total, completed, rate}</code></td></tr>
+        <tr><td><code>stats:streak</code></td><td>Renderer → Main</td><td> -</td><td><code>{current, longest, totalDays}</code></td></tr>
+        <tr><td><code>stats:timePerProject</code></td><td>Renderer → Main</td><td><code>{startDate, endDate}</code></td><td><code>{project_name, project_color, total_time}[]</code></td></tr>
+        <tr><td><code>stats:tasksPerWeek</code></td><td>Renderer → Main</td><td><code>{startDate, endDate}</code></td><td><code>{week, completed}[]</code></td></tr>
+        <tr><td colspan="4" style="font-weight: 600; color: #0D9488; padding-top: 8px;">Settings &amp; Data</td></tr>
+        <tr><td><code>settings:get</code></td><td>Renderer → Main</td><td><code>key: string</code></td><td><code>string | null</code></td></tr>
+        <tr><td><code>settings:set</code></td><td>Renderer → Main</td><td><code>{key, value}</code></td><td><code>{key, value}</code></td></tr>
+        <tr><td><code>export:data</code></td><td>Renderer → Main</td><td><code>'json' | 'csv'</code></td><td><code>{success, filePath?}</code></td></tr>
+        <tr><td><code>data:reset</code></td><td>Renderer → Main</td><td> -</td><td><code>{success}</code></td></tr>
+        <tr><td><code>image:pick</code></td><td>Renderer → Main</td><td><code>date: string</code></td><td><code>{url, name} | null</code></td></tr>
+      </table>
+      <p><strong>Menu-triggered events</strong> (Main → Renderer via <code>webContents.send()</code>):</p>
+      <table>
+        <tr><th>Channel</th><th>Direction</th><th>Data</th></tr>
+        <tr><td><code>menu:export</code></td><td>Main → Renderer</td><td><code>'json' | 'csv'</code></td></tr>
+        <tr><td><code>menu:import-complete</code></td><td>Main → Renderer</td><td><code>{success, error?, entriesCount?, tasksCount?, projectsCount?}</code></td></tr>
+      </table>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>6. Project Structure</h2>
+  <pre>
+mydailydiary/
+├── azure-pipelines.yml          # CI/CD pipeline definition
+├── vitest.config.ts             # Test configuration
+├── vite.config.ts               # Vite bundler config (port 5174)
+├── tsconfig.json                # TypeScript config (renderer only)
+├── package.json                 # Dependencies, scripts, electron-builder config
+├── .gitignore
+│
+├── build/
+│   └── icon.png                 # App icon (used by installer)
+│
+├── scripts/
+│   ├── wait-for-vite.js         # Dev helper: waits for Vite server before launching Electron
+│   └── generate-icon.js         # Utility to generate app icon
+│
+├── src/
+│   ├── main/                    # ── Electron Main Process (CommonJS) ──
+│   │   ├── main.js              # App entry, window, menu, IPC handlers
+│   │   ├── preload.js           # Context bridge (window.api)
+│   │   ├── database.js          # SQLite CRUD operations
+│   │   ├── seed.js              # First-launch sample data (27 working days)
+│   │   ├── help.html            # User help document
+│   │   └── architecture.html    # This document
+│   │
+│   └── renderer/                # ── React Renderer (TypeScript + ESM) ──
+│       ├── main.tsx             # React entry point
+│       ├── index.html           # HTML shell
+│       ├── index.css            # Tailwind imports + custom styles
+│       ├── App.tsx              # Root component (all state)
+│       ├── types.ts             # TypeScript interfaces + window.api types
+│       ├── utils.ts             # Shared utilities (formatDate, generateStandupMessage)
+│       ├── assets/
+│       │   └── iqz-logo.png     # Sidebar logo
+│       ├── extensions/
+│       │   ├── ResizableImage.tsx # Tiptap Node ext  - drag-to-resize images
+│       │   └── Backlink.tsx       # Tiptap Node ext  - [[date]] cross-references
+│       └── components/
+│           ├── Sidebar.tsx        # Navigation, search, projects, tags, reset
+│           ├── DailyLog.tsx       # Daily log section
+│           ├── TaskList.tsx       # Task list with timer controls
+│           ├── TomorrowPlan.tsx   # Tomorrow's plan section
+│           ├── RichTextEditor.tsx # Tiptap editor wrapper (all extensions)
+│           ├── CalendarPicker.tsx # Monthly calendar + workload heatmap
+│           ├── ProjectManager.tsx # Project CRUD modal
+│           ├── TagManager.tsx     # Tag CRUD modal
+│           ├── KanbanBoard.tsx    # Kanban board (3 columns)
+│           ├── StatsView.tsx      # Statistics dashboard with charts
+│           ├── BacklinksPanel.tsx # "Referenced by" cross-reference list
+│           ├── CommandPalette.tsx # Alt+K fuzzy command palette
+│           └── GuidedTour.tsx     # 9-step onboarding overlay
+│
+├── tests/
+│   ├── database.test.js         # 42 database unit tests
+│   └── utils.test.ts            # 8 formatDate utility tests
+│
+├── dist/renderer/               # Vite build output (gitignored)
+└── release/                     # Installer output (gitignored)
+  </pre>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>7. Data Flow Diagrams</h2>
+
+  <details>
+    <summary>7.1 Auto-Save Flow</summary>
+    <div class="detail-body">
+      <pre>
+User types in DailyLog or TomorrowPlan
+  │
+  ▼
+onChange callback fires
+  │
+  ├── setLogContent(value) or setTomorrowsPlan(value)
+  └── setSaveStatus('unsaved')
+        │
+        ▼
+  useEffect detects saveStatus === 'unsaved'
+        │
+        ▼
+  setTimeout(800ms)  - debounce
+        │
+        ▼
+  setSaveStatus('saving')
+        │
+        ▼
+  window.api.saveEntry({date, logContent, tomorrowsPlan})
+        │
+        ▼
+  IPC → main.js → db.saveEntry() → SQLite UPSERT
+        │
+        ▼
+  Returns saved Entry → setEntry(saved)
+        │
+        ▼
+  setSaveStatus('saved')</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>7.2 Timer Flow</summary>
+    <div class="detail-body">
+      <pre>
+User clicks ▶ on Task A
+  │
+  ▼
+handleStartTimer(taskA.id)
+  │
+  ├── Find all other tasks with timer_started_at !== null
+  │     └── For each: window.api.stopTimer(id) → accumulates elapsed time
+  │
+  ▼
+window.api.startTimer(taskA.id)
+  │
+  ▼
+IPC → db.startTimer(id) → Sets timer_started_at = new Date().toISOString()
+  │
+  ▼
+Returns updated Task → setTasks(...)
+  │
+  ▼
+UI: Pulsing green dot appears on task + global header indicator shows task name + live counter
+  │
+  ▼
+React useEffect in TaskList: setInterval(1000ms) calculates elapsed from timer_started_at
+  │
+  ▼
+User clicks ⏹ (or checks task as completed)
+  │
+  ▼
+window.api.stopTimer(id)
+  │
+  ▼
+IPC → db.stopTimer(id):
+  ├── elapsed = now - timer_started_at (in seconds)
+  ├── time_spent += elapsed
+  └── timer_started_at = NULL</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>7.3 Import/Export Flow</summary>
+    <div class="detail-body">
+      <pre>
+EXPORT (Menu → Tools → Export as JSON/CSV):
+  Menu click → main.js handleExportFromMenu(format)
+    │
+    ▼
+  mainWindow.webContents.send('menu:export', format)
+    │
+    ▼
+  Renderer onMenuExport listener → window.api.exportData(format)
+    │
+    ▼
+  IPC → main.js 'export:data' handler:
+    ├── db.exportAllData() → {entries, tasks, projects}
+    ├── dialog.showSaveDialog() → user picks file path
+    ├── JSON: JSON.stringify(data, null, 2)
+    └── CSV: csvEscape() + row formatting
+    │
+    ▼
+  fs.writeFileSync(filePath, content)
+
+
+IMPORT (Menu → Tools → Import from JSON):
+  Menu click → main.js handleImport()
+    │
+    ▼
+  dialog.showOpenDialog() → user picks JSON file
+    │
+    ▼
+  fs.readFileSync() → JSON.parse()
+    │
+    ▼
+  db.importData(data)  - inside a transaction:
+    ├── Insert projects (INSERT OR IGNORE)
+    ├── Insert entries (INSERT OR REPLACE)
+    └── Insert tasks (resolve project_name → project_id)
+    │
+    ▼
+  mainWindow.webContents.send('menu:import-complete', result)
+    │
+    ▼
+  Renderer onMenuImportComplete → reloads all data</pre>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>8. Build &amp; Deployment</h2>
+
+  <details>
+    <summary>8.1 Development Workflow</summary>
+    <div class="detail-body">
+      <pre>npm run dev</pre>
+      <p>Runs two processes concurrently:</p>
+      <ol>
+        <li><strong>Vite dev server</strong> (<code>npm run dev:renderer</code>)  - starts on <code>localhost:5174</code> with HMR</li>
+        <li><strong>Electron</strong> (<code>npm run dev:electron</code>)  - waits for Vite to be ready, then launches <code>electron .</code></li>
+      </ol>
+      <p>The wait script (<code>scripts/wait-for-vite.js</code>) polls <code>localhost:5174</code> until it responds before launching Electron to prevent a blank window.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>8.2 Production Build</summary>
+    <div class="detail-body">
+      <pre>npm run build</pre>
+      <p>Executes two stages:</p>
+      <ol>
+        <li><code>vite build</code>  - Bundles React/TS/Tailwind into <code>dist/renderer/</code> (index.html + hashed JS/CSS assets)</li>
+        <li><code>electron-builder --win</code>  - Packages into a Windows installer:
+          <ul>
+            <li>Compiles <code>better-sqlite3</code> native module for Electron's Node.js version</li>
+            <li>Packs <code>src/main/**/*</code> + <code>dist/renderer/**/*</code> into an asar archive</li>
+            <li>Generates NSIS installer (~97 MB) in <code>release/</code></li>
+          </ul>
+        </li>
+      </ol>
+      <p><strong>Installer options</strong> (NSIS):</p>
+      <ul>
+        <li>Per-user install (no admin required)</li>
+        <li>Custom install directory</li>
+        <li>Desktop + Start Menu shortcuts</li>
+        <li>App ID: <code>com.iqzsystems.dailydiary</code></li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>8.3 Native Module Handling</summary>
+    <div class="detail-body">
+      <p><code>better-sqlite3</code> is a <strong>C++ native addon</strong> that must be compiled for the correct Node.js ABI version.</p>
+      <div class="warn">⚠️ The native module must be compiled for the <strong>target runtime</strong>:<br>
+        • <strong>System Node.js</strong>  - for running tests (<code>npm rebuild better-sqlite3</code>)<br>
+        • <strong>Electron's Node.js</strong>  - for running/packaging the app (<code>npx electron-rebuild</code>)
+      </div>
+      <p>The <code>pretest</code> npm script automatically runs <code>npm rebuild better-sqlite3</code> before tests to ensure the native module matches the system Node.js version.</p>
+      <p><code>electron-builder</code> runs <code>@electron/rebuild</code> automatically during the build step.</p>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>9. Testing</h2>
+
+  <details>
+    <summary>9.1 Test Architecture <span class="label label-test">Vitest</span></summary>
+    <div class="detail-body">
+      <p>Uses <strong>Vitest</strong>  - Vite-native test runner with instant transforms and ES module support.</p>
+      <p><strong>Test files:</strong></p>
+      <table>
+        <tr><th>File</th><th>Tests</th><th>Coverage</th></tr>
+        <tr><td><code>tests/database.test.js</code></td><td>42</td><td>All database.js functions: entries, tasks, time tracking, projects, carry-over, settings, export, import, reset, seed</td></tr>
+        <tr><td><code>tests/utils.test.ts</code></td><td>8</td><td>formatDate utility: standard dates, padding, boundaries, leap year</td></tr>
+      </table>
+
+      <p><strong>Database test strategy:</strong></p>
+      <ul>
+        <li>Electron's <code>app</code> module is mocked via <code>vi.mock('electron')</code></li>
+        <li>Tests use <code>db.initialize(customDbPath)</code> with a temp directory SQLite file</li>
+        <li><code>db.resetAllData()</code> runs in <code>beforeEach</code> for isolation</li>
+        <li>Temp directory is cleaned up in <code>afterAll</code></li>
+      </ul>
+
+      <p><strong>Commands:</strong></p>
+      <pre>npm test          # Run all tests once (with pretest rebuild)
+npm run test:watch  # Run in watch mode</pre>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>10. CI/CD Pipeline</h2>
+
+  <details>
+    <summary>10.1 Azure DevOps Pipeline</summary>
+    <div class="detail-body">
+      <p>Defined in <code>azure-pipelines.yml</code>. Triggers on pushes to <code>main</code>.</p>
+      <p><strong>Agent pool:</strong> <code>windows-latest</code> (required for NSIS installer build)</p>
+      <p><strong>Pipeline steps:</strong></p>
+      <table>
+        <tr><th>#</th><th>Step</th><th>Command</th><th>Purpose</th></tr>
+        <tr><td>1</td><td>Setup Node.js</td><td><code>NodeTool@0 (v20.x)</code></td><td>Install Node.js runtime</td></tr>
+        <tr><td>2</td><td>Install deps</td><td><code>npm ci</code></td><td>Clean install from lockfile</td></tr>
+        <tr><td>3</td><td>Unit tests</td><td><code>npm test</code></td><td>Rebuild native module for Node.js + run 50 tests</td></tr>
+        <tr><td>4</td><td>Electron rebuild</td><td><code>npx electron-rebuild</code></td><td>Recompile native module for Electron</td></tr>
+        <tr><td>5</td><td>Build</td><td><code>npm run build</code></td><td>Vite build + NSIS installer generation</td></tr>
+      </table>
+      <div class="note">ℹ️ Step 3 includes a <code>pretest</code> script that runs <code>npm rebuild better-sqlite3</code> to compile the native module for system Node.js. Step 4 then recompiles it for Electron before the final build.</div>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>11. Security Considerations</h2>
+
+  <details>
+    <summary>11.1 Electron Security Model</summary>
+    <div class="detail-body">
+      <ul>
+        <li><strong>Context Isolation:</strong> Enabled  - renderer runs in a separate context from preload</li>
+        <li><strong>Node Integration:</strong> Disabled  - no <code>require()</code> or Node APIs in renderer</li>
+        <li><strong>Context Bridge:</strong> Only whitelisted API methods are exposed via <code>window.api</code></li>
+        <li><strong>No Remote Module:</strong> The deprecated <code>remote</code> module is not used</li>
+        <li><strong>Offline-only:</strong> No network requests, no external API calls, no telemetry</li>
+        <li><strong>DevTools:</strong> Only available in dev mode (not exposed in production builds)</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>11.2 Data Security</summary>
+    <div class="detail-body">
+      <ul>
+        <li><strong>Local storage only:</strong> SQLite database stored in user's AppData  - no cloud sync</li>
+        <li><strong>No encryption at rest:</strong> Data is stored in plaintext SQLite. Relies on OS-level user account protection. Suitable for personal productivity data.</li>
+        <li><strong>Parameterized queries:</strong> All SQL uses prepared statements with <code>?</code> placeholders  - no string concatenation, preventing SQL injection</li>
+        <li><strong>CSV export escaping:</strong> Values containing commas, quotes, or newlines are properly quoted with double-quote escaping</li>
+        <li><strong>Import validation:</strong> Input is validated (type checks, required fields) before database insertion</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>12. First-Launch Experience</h2>
+  <details>
+    <summary>Seed Data &amp; Guided Tour</summary>
+    <div class="detail-body">
+      <p>On first launch (no <code>onboarding_complete</code> setting exists):</p>
+      <ol>
+        <li><code>db.runSeedIfNeeded()</code> calls <code>seedSampleData(db)</code> which inserts:
+          <ul>
+            <li>5 projects (ETL Pipeline, Data Quality, Reporting, Infrastructure, Meetings)</li>
+            <li>8 tags (pipeline, spark, azure, incident, documentation, optimization, sprint, demo)</li>
+            <li>6 holidays (New Year, MLK Day, Republic Day, Valentine's Day, etc.)</li>
+            <li>4 task templates (Daily Standup as recurring, Sprint Planning, Data Pipeline Deploy, Month-End Close)</li>
+            <li>27 working days of entries (Jan 2 – Mar 3, 2026) with realistic data engineer diary content</li>
+            <li>~150 tasks with completion status, time tracking, project assignments, and Kanban statuses (todo/in_progress/done)</li>
+            <li>8 backlink cross-references between related entries (e.g., incident follow-ups, sprint reviews, demo references)</li>
+            <li>Tag associations across all entries for filtering and categorization</li>
+          </ul>
+        </li>
+        <li>Sets <code>onboarding_complete = 'pending_tour'</code></li>
+        <li>Renderer detects <code>pending_tour</code> → shows the <strong>GuidedTour</strong> overlay</li>
+        <li>Tour walks through 9 steps: sidebar, search, daily log, tasks, timer, projects, carry-over, export (Tools menu), tomorrow's plan</li>
+        <li>On tour completion, sets <code>onboarding_complete = 'true'</code></li>
+      </ol>
+      <p>Subsequent launches: <code>runSeedIfNeeded()</code> finds the setting exists and skips seeding.</p>
+      <p>After resetting data: the setting is cleared, so the next launch re-seeds and re-shows the tour.</p>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>13. Performance Characteristics</h2>
+  <details>
+    <summary>Runtime Performance</summary>
+    <div class="detail-body">
+      <ul>
+        <li><strong>SQLite (synchronous):</strong> All database operations are synchronous via <code>better-sqlite3</code>, avoiding async overhead. Typical query: &lt;1ms for single-row operations.</li>
+        <li><strong>Auto-save debounce:</strong> 800ms delay prevents excessive writes during rapid typing. Only one <code>saveEntry</code> call per typing pause.</li>
+        <li><strong>Timer updates:</strong> 1-second <code>setInterval</code> recalculates elapsed display client-side  - no database writes during active timing (only on start/stop).</li>
+        <li><strong>Search:</strong> Uses <code>LIKE '%query%'</code> with a 50-result limit. Fast enough for personal diary volumes (hundreds to low thousands of entries).</li>
+        <li><strong>Renderer bundle:</strong> ~597 KB JS (190 KB gzipped). Single-chunk build  - adequate for a desktop app loaded from local filesystem.</li>
+        <li><strong>Memory:</strong> Typical footprint ~120–180 MB (Electron baseline + renderer + SQLite). No memory leaks from timer intervals (cleaned up via <code>useEffect</code> return).</li>
+      </ul>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h2>14. npm Scripts Reference</h2>
+  <table>
+    <tr><th>Script</th><th>Command</th><th>Description</th></tr>
+    <tr><td><code>dev</code></td><td><code>concurrently "vite" "electron ."</code></td><td>Start dev server + Electron</td></tr>
+    <tr><td><code>dev:renderer</code></td><td><code>vite</code></td><td>Vite dev server only (port 5174)</td></tr>
+    <tr><td><code>dev:electron</code></td><td><code>wait-for-vite && electron .</code></td><td>Wait for Vite, then launch Electron</td></tr>
+    <tr><td><code>build:renderer</code></td><td><code>vite build</code></td><td>Production build of renderer</td></tr>
+    <tr><td><code>build</code></td><td><code>build:renderer + electron-builder</code></td><td>Full build + Windows installer</td></tr>
+    <tr><td><code>pretest</code></td><td><code>npm rebuild better-sqlite3</code></td><td>Rebuild native module for Node.js</td></tr>
+    <tr><td><code>test</code></td><td><code>vitest run</code></td><td>Run all unit tests</td></tr>
+    <tr><td><code>test:watch</code></td><td><code>vitest</code></td><td>Run tests in watch mode</td></tr>
+  </table>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="footer">
+    OneLog &nbsp;•&nbsp; Open Source &nbsp;•&nbsp; MIT License
+  </div>
+
+</body>
+</html>
