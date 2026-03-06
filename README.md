@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="build/oneloglogo.png" alt="OneLog" width="80" />
+  <img src="build/icon.png" alt="OneLog" width="80" />
 </p>
 
 <h1 align="center">OneLog</h1>
@@ -69,7 +69,7 @@ Most journaling and productivity apps require accounts, send data to the cloud, 
 
 ## Screenshots
 
-> _Coming soon_
+> <img src="build\Screenshot1.png" alt="OneLog"/>
 
 ---
 
