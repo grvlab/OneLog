@@ -18,7 +18,10 @@
     "test:watch": "vitest"
   },
   "keywords": [],
-  "author": "",
+  "author": {
+    "name": "grvlab",
+    "email": "grvlab@users.noreply.github.com"
+  },
   "license": "MIT",
   "type": "commonjs",
   "build": {
