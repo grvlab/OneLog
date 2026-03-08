@@ -16,10 +16,10 @@ jobs:
         include:
           - os: windows-latest
             platform: win
-          - os: macos-latest
-            platform: mac
-          - os: ubuntu-latest
-            platform: linux
+          # - os: macos-latest
+          #   platform: mac
+          # - os: ubuntu-latest
+          #   platform: linux
 
     runs-on: ${{ matrix.os }}
 
@@ -51,9 +51,6 @@ jobs:
           name: onelog-${{ matrix.platform }}
           path: |
             release/*.exe
-            release/*.dmg
-            release/*.AppImage
-            release/*.deb
           if-no-files-found: ignore
 
       - name: Upload to release
@@ -62,7 +59,4 @@ jobs:
         with:
           files: |
             release/*.exe
-            release/*.dmg
-            release/*.AppImage
-            release/*.deb
           draft: true
