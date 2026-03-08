@@ -848,7 +848,7 @@ function resetAllData() {
 // --- Migration ---
 
 const APP_VERSION = require('../../package.json').version;
-const MIN_CLEAN_VERSION = '1.0.5';
+const MIN_CLEAN_VERSION = '1.0.0';
 
 function compareVersions(a, b) {
   const pa = a.split('.').map(Number);
